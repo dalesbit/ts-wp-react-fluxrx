@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-
+import { Observable } from "@reactivex/rxjs";
+import { default as storePool } from "./frame/StorePool";
 import { App } from "./app";
 import { Frame } from "./frame";
 
@@ -17,8 +18,12 @@ class Bootstrap {
 
       Frame.Store
       .subscribe((appState:any) => {
+        console.log("appState",appState);
         ReactDOM.render(
           <div>
+            {appState.AppStore.test}
+            <button onClick={appState.AppStore.func}>+</button>
+            <p>{appState.test}</p>
             <button onClick={appState.increaseCount}>+</button>
             <div>{appState.count}</div>
             <button onClick={appState.decreaseCount}>-</button>

@@ -3,7 +3,7 @@ import { storePool } from "../StorePool";
 import { BehaviorSubject, Observable } from '@reactivex/rxjs';
 import * as Combine from "../utils/combineLatestObj";
 
-export default function Store(target: any) {
+export default function StoreDecorator(target: any) {
 
   // save a reference to the original constructor
   var original = target;
@@ -14,8 +14,20 @@ export default function Store(target: any) {
       return constructor.apply(this, args);
     }
     c.prototype = constructor.prototype;
+    let store = new c();
 
-    return new c();
+    let actions:any = {};
+
+    Object.keys(store).forEach((_:any) => {
+        if(_[_.length-1] == "$"){
+          console.log("act",_);
+          actions[_.slice(0, -1)] = store[_]; // must be an observable
+        }
+    });
+
+    storePool.add(Combine.combineLatestObj(actions));
+
+    return store;
   }
 
   // the new constructor behaviour
@@ -25,20 +37,6 @@ export default function Store(target: any) {
 
   // copy prototype so intanceof operator still works
   f.prototype = original.prototype;
-  f.prototype._dispatcher = Frame.Dispatcher;
-  storePool.add((() => {
-    let actions = {};
-
-    Object.keys(f.prototype).forEach(_ => {
-        if(_[_.length-1  ] == "$"){
-          actions[_] = f.prototype[_]; // must be an observable
-        }
-    });
-    
-
-    return Combine.combineLatestObj(actions);
-  })());
-
   // return new constructor (will override original)
 
   return f;

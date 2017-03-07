@@ -1,3 +1,3 @@
 export {
-   default as Store
+   default as StoreDecorator
 } from "./store";

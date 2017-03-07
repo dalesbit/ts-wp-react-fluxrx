@@ -28,13 +28,16 @@ export const count =
 export const increaseCount =
   Observable.of(() => {
     dispatch("COUNTER_INCREASED")
-  })
+  });
 
 export const decreaseCount =
   Observable.of(() => {
     dispatch("COUNTER_DECREASED")
-  })
+  });
 
 /* ======================== all together ==================================== */
+let m = {count, increaseCount, decreaseCount};
+let k = Combine.combineLatestObj(m);
+debugger;
 
-export default Combine.combineLatestObj({count, increaseCount, decreaseCount})
+export default k;
