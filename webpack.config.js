@@ -34,4 +34,6 @@ module.exports = {
         "react-dom": "ReactDOM",
         "rxjs": "rxjs"
     },
+    target: "web"
+
 };

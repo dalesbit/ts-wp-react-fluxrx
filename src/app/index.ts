@@ -1,11 +1,9 @@
 import { AppStore } from "./AppStore";
+import { UserStore } from "./UserStore";
 
 export class App {
   constructor(){
     let c = new AppStore();
-    c.setState({
-      test:222,
-      c:3
-    });
+    let k = new UserStore();
   }
 };

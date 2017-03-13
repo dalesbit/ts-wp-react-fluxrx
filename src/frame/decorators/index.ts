@@ -1,3 +1,6 @@
 export {
-   default as StoreDecorator
+   default as StoreDecorator,
+   State as StateDecorator,
+   Obs as ObservableDecorator,
+   Stream as StreamDecorator
 } from "./store";

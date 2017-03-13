@@ -1,16 +1,29 @@
 import { Observable } from '@reactivex/rxjs'
 
-export function combineLatestObj(obsObj:any) {
+export function combineLatestObj<T>(type: { new(): T ;},reducers:T) {
     let observables:Array<any> = []
-    const keys = Object.keys(obsObj)
+    const keys = Object.keys(reducers)
 
     keys.map((key) => {
-      observables.push(obsObj[key])
+      observables.push(reducers[key])
     })
+    return Observable.combineLatest(...observables, (...args:any[]) => {
+      let k = new type();
 
-    return Observable.combineLatest(observables, (...args:any[]) => {
-      return args.reduce((output, current, i) => {
-        return Object.assign(output, {[keys[i]]: current})
-      }, {})
+      let reduced = args.reduce((output, current, i) => {
+        return Object.assign(<T>output, {[keys[i]]: current}) as T;
+      }, <T>{}) as T;
+      return <T>Object.assign(k,reduced);
     })
   }
+
+  export function combineLatestObjFlat(obsObj:any) {
+      let observables:Array<any> = []
+      const keys = Object.keys(obsObj)
+
+      keys.map((key) => {
+        observables.push(obsObj[key])
+      })
+
+      return observables
+    }
