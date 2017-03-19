@@ -35,7 +35,9 @@ export class StoreRegistry implements Registry {
   }
 
   public flush(): void {
-    this._pool.splice(0,this._pool.length);
+    while(this._pool.length > 0) {
+      this._pool.pop();
+    }
   }
 
   get size(): number {
