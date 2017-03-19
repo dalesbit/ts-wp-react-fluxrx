@@ -6,7 +6,8 @@ import * as Combine from "../frame/utils/combineLatestObj";
 @StoreDecorator
 export class UserStore extends Store {
 
-  private users$ = Observable.from([1]).startWith(0);
+  @StateDecorator
+  private users = Observable.from([1]).startWith(0);
 
   constructor(){
     super();

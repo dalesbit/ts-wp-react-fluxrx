@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Observable } from "@reactivex/rxjs";
-import { default as storePool } from "./frame/StorePool";
 import { App } from "./app";
 import { Frame } from "./frame";
 

@@ -1,17 +1,17 @@
 import { BehaviorSubject, Observable } from '@reactivex/rxjs';
 import * as Combine from "./utils/combineLatestObj";
 
-export abstract class Pool {
-  public register(item:any){};
-  public exists(item:any){};
-  public remove(item:any){};
-  public flush(){};
+export interface Registry {
+  register(item:any): boolean;
+  exists(item:any): boolean;
+  remove(item:any): void;
+  flush(): void;
   size: number;
   keys: any;
   pool: any;
 }
 
-export class StorePool extends Pool {
+export class StoreRegistry implements Registry {
 
   private _pool: any[] = [];
 
@@ -35,7 +35,7 @@ export class StorePool extends Pool {
   }
 
   public flush(): void {
-    this._pool = [];
+    this._pool.splice(0,this._pool.length);
   }
 
   get size(): number {
@@ -52,5 +52,5 @@ export class StorePool extends Pool {
 
 }
 
-var storePool = new StorePool();
-export default storePool;
+var storeRegistry = new StoreRegistry();
+export default storeRegistry;

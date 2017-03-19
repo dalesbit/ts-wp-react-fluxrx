@@ -7,8 +7,8 @@ export function combineLatestObj<T>(type: { new(): T ;}, reducers:any) {
     keys.map((key) => {
       observables.push(reducers[key])
     })
+    
     return Observable.combineLatest(...observables, (...args:any[]) => {
-
       let reduced = args.reduce((output, current, i) => {
         return Object.assign(<T>output, {[keys[i]]: current}) as T;
       }, <T>{}) as T;

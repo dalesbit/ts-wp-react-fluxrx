@@ -20,7 +20,7 @@ export function dispatch(type: any, payload:any = null) {
   }
   */
   const action = { type, payload }
-  _dispatcher.next(action)
+  _dispatcher.next(action);
 }
 
 
@@ -75,6 +75,6 @@ export function getPayload (...args:any[]) {
     getAction(...args)
       .pluck('payload')
   );
-}
+};
 
 export const DONT_USE_UNLESS_YOUR_NAME_IS_ACTION_CREATOR = _dispatcher
