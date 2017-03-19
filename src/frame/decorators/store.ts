@@ -1,5 +1,5 @@
 import { Frame } from "../index";
-import { storePool } from "../StorePool";
+import { default as storePool } from "../StorePool";
 import { BehaviorSubject, Observable } from '@reactivex/rxjs';
 import * as Combine from "../utils/combineLatestObj";
 
@@ -90,7 +90,7 @@ export default function StoreDecorator(target: any) {
 
     // so lets create a namespace wrapper
 
-    storePool.add(store.getStream());
+    storePool.register(store.getStream());
     return store;
   }
 

@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from '@reactivex/rxjs';
-import { storePool } from "./StorePool";
 import * as Dispatcher from "./Dispatcher";
 import * as Combine from "./utils/combineLatestObj";
+import { default as StorePool } from "./StorePool";
 const initialState = Observable.from([{
   title: "YOLO"
 }]);
@@ -16,64 +16,77 @@ export class Store {
   constructor() {
     this._CLASSNAME = this.constructor.toString().match(/\w+/g)[1];
     this._OBSERVERNAME = this._CLASSNAME + "$";
-    this[this._OBSERVERNAME]:BehaviorSubject = new BehaviorSubject(this._state);
+    this[this._OBSERVERNAME] = new BehaviorSubject(this._state);
     this._dispatcher = Dispatcher;
   }
 
-  protected setState(state:any){
+  protected setState(state:any): void{
     this._state = Object.assign(this._state,state);
-
     this[this._OBSERVERNAME].next(this._state);
   }
 
-  public getStream(){
-    function create<T>(c: {new(): T; }): T {
-        return new c();
-    }
+  public getStream(): Observable<any> {
     // LALALALLA
-    let m = eval('class '+this._CLASSNAME.replace('Store','')+'{}');
+    let actionType = eval('class '+this._CLASSNAME.replace('Store','')+'{}');
     let actions = {};
     Object.keys(this).forEach((_:any) => {
         if(_[_.length-1] == "$" && _.slice(0, -1) !== this._CLASSNAME){
           actions[_.slice(0, -1)] = this[_]; // must be an observable
         }
     });
-    return Combine.combineLatestObj<typeof m>(m,actions);
-
+    return Combine.combineLatestObj<typeof actionType>(actionType,actions);
   }
-
 }
 
-const devToolsObservable = new BehaviorSubject({});
-const devTools = window['__REDUX_DEVTOOLS_EXTENSION__'].connect({});
-devTools.subscribe((message:any) => {
-  if (message.type === 'DISPATCH' && message.state && message.payload.type != "TOGGLE_ACTION") {
-    console.log('DevTools requested to change the state to', JSON.parse(message.state));
-    devToolsObservable.next(JSON.parse(message.state));
+class ReduxDevTools {
+  static readonly ID = "__REDUX_DEVTOOLS_EXTENSION__";
+  private _connection: any = null;
+  private _observer: BehaviorSubject<any> = new BehaviorSubject({});
+
+  constructor(){
+    this._connection = window[ReduxDevTools.ID].connect({});
+    this._connection.init(this._observer.value);
+    this._connection.subscribe(this.handleMessage.bind(this));
   }
-});
 
-devTools.init(devToolsObservable.value);
+  private checkExtension(): void {
+    //
+  }
+
+  private handleMessage(message:any): void {
+    if (message.type === 'DISPATCH' && message.state && message.payload.type != "TOGGLE_ACTION") {
+      console.log('DevTools requested to change the state to', JSON.parse(message.state));
+      let state = JSON.parse(message.state);
+      state.payload = message.payload;
+      this._observer.next(state);
+    }
+  }
+
+  public send(describer: string, message:any) {
+    this._connection.send(describer, message);
+  }
+
+  get observer(): BehaviorSubject<any> {
+    return this._observer;
+  }
+}
 
 
-storePool.add(initialState);
-storePool.add(devToolsObservable);
-// each time pool emits, then we combine?
-let state = null;
+let devTools = new ReduxDevTools();
+StorePool.register(initialState);
+
 export default Observable.combineLatest(
-    storePool._pool,
+    StorePool.pool,
     (...stores:any[]) => {
-
       let states = {};
       for(let store of stores){
-        let m = store.constructor.name !== "Object" ? store.constructor.name : null;
-        if(m){
-          Object.assign(states, {[m]:store});
-        } else {
-          Object.assign(states, store);
-        }
+          let m = store.constructor.name !== "Object" ? store.constructor.name : null;
+          if(m){
+            Object.assign(states, {[m]:store});
+          } else {
+            Object.assign(states, store);
+          }
       }
-
       devTools.send('change state', states);
       return states;
     });

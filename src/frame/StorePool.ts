@@ -1,19 +1,56 @@
 import { BehaviorSubject, Observable } from '@reactivex/rxjs';
 import * as Combine from "./utils/combineLatestObj";
 
-export default class StorePool {
+export abstract class Pool {
+  public register(item:any){};
+  public exists(item:any){};
+  public remove(item:any){};
+  public flush(){};
+  size: number;
+  keys: any;
+  pool: any;
+}
 
-  public _store: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  public _pool: any[] = [];
-  constructor(){
+export class StorePool extends Pool {
+
+  private _pool: any[] = [];
+
+  public register(store:any): boolean {
+    if(!this.exists(store)) return false;
+
+    this._pool.push(store);
+    return true;
   }
 
-  public add(store:any): void {
-    // TODO why wrap it again.. ffs
-    //this._store.next(store);
-    this._pool.push(store);
+  public exists(item:any): boolean {
+    return this.getKey(item) === -1;
+  }
+
+  public getKey(item:any): number {
+    return this._pool.indexOf(item);
+  }
+
+  public remove(item:any): void {
+    this._pool.splice(this.getKey(item));
+  }
+
+  public flush(): void {
+    this._pool = [];
+  }
+
+  get size(): number {
+    return this._pool.length;
+  }
+
+  get keys(): any {
+    return this._pool.keys();
+  }
+
+  get pool(): any {
+    return this._pool;
   }
 
 }
 
-export var storePool = new StorePool();
+var storePool = new StorePool();
+export default storePool;
