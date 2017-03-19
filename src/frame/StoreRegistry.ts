@@ -2,24 +2,24 @@ import { BehaviorSubject, Observable } from '@reactivex/rxjs';
 import * as Combine from "./utils/combineLatestObj";
 
 export interface Registry {
-  register(item:any): boolean;
+  register(item:any): boolean | number;
   exists(item:any): boolean;
   remove(item:any): void;
+  get(key:number): any | boolean;
+  getKey(item:any): number;
   flush(): void;
   size: number;
-  keys: any;
+  keys: Iterator<any>;
   pool: any;
 }
 
 export class StoreRegistry implements Registry {
 
-  private _pool: any[] = [];
+  private _pool: Array<any> = [];
 
-  public register(store:any): boolean {
-    if(!this.exists(store)) return false;
-
-    this._pool.push(store);
-    return true;
+  public register(store:any): boolean | number {
+    if(!this.exists(store)) { return false };
+    return this._pool.push(store);
   }
 
   public exists(item:any): boolean {
@@ -28,6 +28,10 @@ export class StoreRegistry implements Registry {
 
   public getKey(item:any): number {
     return this._pool.indexOf(item);
+  }
+
+  public get(key:number): any | boolean {
+    return this.exists(this._pool[key]) ? this._pool[key] : false;
   }
 
   public remove(item:any): void {
@@ -44,11 +48,11 @@ export class StoreRegistry implements Registry {
     return this._pool.length;
   }
 
-  get keys(): any {
+  get keys(): Iterator<any> {
     return this._pool.keys();
   }
 
-  get pool(): any {
+  get pool(): Array<any> {
     return this._pool;
   }
 

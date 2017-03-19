@@ -10,12 +10,11 @@ function expose(prop: string, target: any, key: string) {
   target[prop][key] = 1;
 }
 
-
 export function Action(target: any, key: string) {
   expose('_actions',target,key);
 }
 
-export function State(target: any, key: string) {
+export function Property(target: any, key: string) {
   expose('_props',target,key);
 }
 

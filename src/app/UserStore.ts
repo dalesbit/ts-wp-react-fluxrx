@@ -1,12 +1,12 @@
-import { StreamDecorator,ObservableDecorator,StateDecorator,StoreDecorator } from "../frame/decorators";
-import { Store } from "../frame/Store";
+import { Property,Store,Action } from "../frame/decorators";
+import { StoreManager } from "../frame/Store";
 import { BehaviorSubject, Observable } from '@reactivex/rxjs';
 import * as Combine from "../frame/utils/combineLatestObj";
 
-@StoreDecorator
-export class UserStore extends Store {
+@Store
+export class UserStore extends StoreManager {
 
-  @StateDecorator
+  @Property
   private users = Observable.from([1]).startWith(0);
 
   constructor(){
