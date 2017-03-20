@@ -1,7 +1,6 @@
-import { Property, Store, Action } from "../frame/decorators";
-import { StoreManager } from "../frame/Store";
-import { BehaviorSubject, Observable } from '@reactivex/rxjs';
-import * as Combine from "../frame/utils/combineLatestObj";
+import { Property, Store } from '../frame/decorators';
+import { StoreManager } from '../frame/Store';
+import { Observable } from '@reactivex/rxjs';
 
 @Store
 export class UserStore extends StoreManager {

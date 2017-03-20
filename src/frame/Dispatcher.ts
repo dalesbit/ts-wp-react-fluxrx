@@ -1,4 +1,4 @@
-import { Subject } from '@reactivex/rxjs'
+import { Subject } from '@reactivex/rxjs';
 //import { Actions } from 'shared/actions'
 
 const _dispatcher = new Subject()

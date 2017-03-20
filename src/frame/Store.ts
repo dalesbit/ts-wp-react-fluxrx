@@ -1,21 +1,21 @@
-import { BehaviorSubject, Observable } from '@reactivex/rxjs';
-import * as Dispatcher from "./Dispatcher";
-import * as Combine from "./utils/combineLatestObj";
-import { default as storeRegistry } from "./StoreRegistry";
-import { ReduxDevTools } from "./ReduxDevTools";
+import { dispatch } from './Dispatcher';
+import * as Dispatcher from './Dispatcher';
+import { ReduxDevTools } from './ReduxDevTools';
+import storeRegistry from './StoreRegistry';
+import * as Combine from './utils/combineLatestObj';
+import { Observable } from '@reactivex/rxjs';
 
 export class StoreManager {
 
-    protected _dispatcher: any;
+    protected _dispatcher: any = Dispatcher;
     protected _state: any = {};
     protected _actions: any = {};
     protected _props: any = {};
+    protected _reducers: any = {};
     protected _CLASSNAME: string;
-
 
     constructor() {
         this._CLASSNAME = this.constructor.toString().match(/\w+/g)[1];
-        this._dispatcher = Dispatcher;
     }
 
     protected setState(state: any): void {
@@ -33,7 +33,7 @@ export class StoreManager {
             )
                 .map((key: string) => {
                     return Object.assign({}, {
-                        [key]: this[key] // tslint:disable-line
+                        [key]: (<any>this)[key] // tslint:disable-line
                     });
                 })
                 .reduce((last: any, current: any, key: number) => {
@@ -42,6 +42,7 @@ export class StoreManager {
         );
 
     }
+
 }
 
 

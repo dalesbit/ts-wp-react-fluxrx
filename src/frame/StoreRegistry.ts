@@ -1,5 +1,3 @@
-import { BehaviorSubject, Observable } from '@reactivex/rxjs';
-import * as Combine from "./utils/combineLatestObj";
 
 export interface Registry {
     register(item: any): boolean | number;

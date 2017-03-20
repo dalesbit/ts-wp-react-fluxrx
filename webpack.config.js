@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = {
     entry: "./src/main.tsx",
     output: {
@@ -7,10 +9,13 @@ module.exports = {
 
     // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
-
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+        alias: {
+            "react": "preact-compat",
+            "react-dom": "preact-compat"
+        }
     },
 
     module: {
@@ -30,8 +35,7 @@ module.exports = {
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
-        "react": "React",
-        "react-dom": "ReactDOM",
+        "preact": "Preact",
         "rxjs": "rxjs"
     },
     target: "web"

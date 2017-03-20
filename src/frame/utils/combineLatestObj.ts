@@ -1,4 +1,4 @@
-import { Observable } from '@reactivex/rxjs'
+import { Observable } from '@reactivex/rxjs';
 
 export function combineLatestObj<T>(type: { new (): T; }, reducers: any) {
     let observables: Array<any> = []

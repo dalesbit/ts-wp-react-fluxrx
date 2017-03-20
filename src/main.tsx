@@ -1,35 +1,25 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { Observable } from "@reactivex/rxjs";
-import { App } from "./app";
-import { Frame } from "./frame";
-
-import { default as Store } from "./frame/Store";
+import { h, render } from 'Preact';
+import { App } from './app';
+import Store from './frame/Store';
+/** @jsx h */
 
 class Bootstrap {
   constructor() {
 
-      let c = new App();
-
-      Store.subscribe((state:any) => {
-        console.log("appState",state);
-        ReactDOM.render(
-          <div>
+    let c = new App();
+    Store.subscribe((state: any) => {
+      render((
+        <div>
             <p>{state.test}</p>
             <button onClick={state.App.increaseCount}>+</button>
             <div>{state.App.counter}</div>
             <button onClick={state.App.decreaseCount}>-</button>
-          </div>,
-            document.getElementById("example")
-        );
-      });
+        </div>),
+        document.body, // note: preact is non desctructive
+        document.body.lastElementChild // note: so we will pass the node to owerwrite
+      );
+    });
   }
 }
 
 new Bootstrap();
-/*{appState.AppStore.test}
-  <button onClick={appState.AppStore.func}>+</button>
-  <p>{appState.test}</p>
-  <button onClick={appState.increaseCount}>+</button>
-  <div>{appState.counter}</div>
-  <button onClick={appState.decreaseCount}>-</button>*/
