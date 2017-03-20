@@ -1,27 +1,27 @@
 ## Goals:
-Purity
-Reduce mental overhelm
-Reactive
-Side effect management
-Object pool
-Easy to use
-Laravel routing ?
-State management / State first
-Clean States
-State Debugger / Redux DevTools
-Scalable
-Frameworkless
-Clean react / no modifiers
-Component level style management
-Use memento pattern ?!
-BE FLUENT (pattern) ;D
+ - Purity
+ - Reduce mental overhelm
+ - Reactive
+ - Side effect management
+ - Object pool
+ - Easy to use
+ - Laravel routing ?
+ - State management / State first
+ - Clean States
+ - State Debugger / Redux DevTools
+ - Scalable
+ - Frameworkless
+ - Clean react / no modifiers
+ - Component level style management
+ - Use memento pattern ?!
+ - BE FLUENT (pattern) ;D
 
 
 ## Tools:
-Rollup / DCE, tree shaking
-Validation Joi / hapijs
-PostCSS ;D
-sindresorhus/mem?
+ - Rollup / DCE, tree shaking
+ - Validation Joi / hapijs
+ - PostCSS ;D
+ - sindresorhus/mem?
 
 ## Good to know:
 Know what is a side effect like:
