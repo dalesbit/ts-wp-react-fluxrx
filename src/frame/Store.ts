@@ -1,37 +1,70 @@
-import { BehaviorSubject, Observable } from '@reactivex/rxjs';
-import { storePool } from "./StorePool";
-import * as Dispatcher from "./Dispatcher";
+import { dispatch } from './Dispatcher';
+import * as Dispatcher from './Dispatcher';
+import { ReduxDevTools } from './ReduxDevTools';
+import storeRegistry from './StoreRegistry';
+import * as Combine from './utils/combineLatestObj';
+import { Observable } from '@reactivex/rxjs';
 
-const initialState = Observable.from([{
-  title: "YOLO"
-}]);
+export class StoreManager {
 
+    protected _dispatcher: any = Dispatcher;
+    protected _state: any = {};
+    protected _actions: any = {};
+    protected _props: any = {};
+    protected _reducers: any = {};
+    protected _CLASSNAME: string;
 
-export class Store {
-  protected _dispatcher: any;
-  protected _state: any = {};
+    constructor() {
+        this._CLASSNAME = this.constructor.toString().match(/\w+/g)[1];
+    }
 
-  private _CLASSNAME: string;
-  private _OBSERVERNAME: string;
+    protected setState(state: any): void {
+        this._state = Object.assign(this._state, state);
+    }
 
-  constructor() {
-    this._CLASSNAME = this.constructor.toString().match(/\w+/g)[1];
-    this._OBSERVERNAME = this._CLASSNAME + "$";
-    this[this._OBSERVERNAME] = new BehaviorSubject(this._state);
-    this._dispatcher = Dispatcher;
-  }
+    public getStream(): Observable<any> {
+        // LALALALLA
+        let actionType = eval('class ' + this._CLASSNAME.replace('Store', '') + '{}');
 
-  public setState(state:any){
-    this._state = Object.assign(this._state,state);
-    this[this._OBSERVERNAME].next(this._state);
-  }
+        return Combine.combineLatestObj<typeof actionType>(
+            actionType,
+            Object.keys(
+                Object.assign(this.constructor.prototype._props, this.constructor.prototype._actions)
+            )
+                .map((key: string) => {
+                    return Object.assign({}, {
+                        [key]: (<any>this)[key] // tslint:disable-line
+                    });
+                })
+                .reduce((last: any, current: any, key: number) => {
+                    return Object.assign(last, current);
+                })
+        );
+
+    }
 
 }
 
-export default Observable.combineLatest(initialState,storePool._store.flatMap(_=>{
-  return Observable.from(_);
-}),
-                                        (...stores:any[]) => {
-                                          let r = Object.assign({}, ...stores);
-                                          return r;
-                                        });
+
+const devTools = new ReduxDevTools();
+const initialState = Observable.of({
+    title: "YOLO"
+});
+storeRegistry.register(devTools.observer); // not working ATM
+storeRegistry.register(initialState);
+
+export default Observable.combineLatest(
+    storeRegistry.pool,
+    (...stores: any[]) => {
+        let states = {};
+        for (let store of stores) {
+            let m = store.constructor.name !== "Object" ? store.constructor.name : null;
+            if (m) {
+                Object.assign(states, { [m]: store });
+            } else {
+                Object.assign(states, store);
+            }
+        }
+        devTools.send('change state', states);
+        return states;
+    });

@@ -1,3 +1,6 @@
 export {
-   default as StoreDecorator
+    default as Store,
+    Property,
+    Action,
+    Reduce
 } from "./store";

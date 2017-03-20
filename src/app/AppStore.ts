@@ -1,39 +1,47 @@
-import { StoreDecorator } from "../frame/decorators";
-import { Store } from "../frame/Store";
-import { BehaviorSubject, Observable } from '@reactivex/rxjs';
-import * as Combine from "../frame/utils/combineLatestObj";
+import { mapTo } from '@reactivex/rxjs/dist/cjs/operator/mapTo';
+import { Action, Property, Store, Reduce } from '../frame/decorators';
+import { StoreManager } from '../frame/Store';
+import { Observable } from '@reactivex/rxjs';
 
-@StoreDecorator
-export class AppStore extends Store {
+@Store
+export class AppStore extends StoreManager {
 
-  increase = this._dispatcher.getPayload("COUNTER_INCREASED").mapTo(1);
-  decrease = this._dispatcher.getPayload("COUNTER_DECREASED").mapTo(-1);
+    // post defined reducer
 
-  add(a:any, b:any) {
-    return Number(a) + Number(b);
-  }
+    @Reduce("COUNTER_INCREASED2")
+    inc(state: Observable<any>) {
+        return state.mapTo(2).do(() => {
+            console.warn("LAS");
+        });
+    };
 
-  private count$ = Observable
-      .merge(this.increase, this.decrease)
-      .scan(this.add)
-      .startWith(0);
+    // constant reducing
+    increase = this._dispatcher.getPayload("COUNTER_INCREASED").mapTo(1);
+    decrease = this._dispatcher.getPayload("COUNTER_DECREASED").mapTo(-1);
 
-  public increaseCount$ = Observable.of(() => {
+    add(a: any, b: any) {
+        return Number(a) + Number(b);
+    }
+
+    @Property
+    private counter = Observable
+        .merge(this.increase, this.decrease)
+        .scan(this.add)
+        .startWith(0);
+
+
+    @Action
+    public increaseCount = Observable.of(() => {
         this._dispatcher.dispatch("COUNTER_INCREASED")
-  });
-
-  public decreaseCount$ = Observable.of(() => {
-        this._dispatcher.dispatch("COUNTER_DECREASED")
-  });
-
-  constructor(){
-    super();
-    this.setState({
-      test:2,
-      func: function(){
-        alert(1);
-      }
     });
-  }
+
+    @Action
+    public decreaseCount = Observable.of(() => {
+        this._dispatcher.dispatch("COUNTER_DECREASED")
+    });
+
+    constructor() {
+        super();
+    }
 
 }
